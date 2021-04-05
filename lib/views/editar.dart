@@ -4,39 +4,43 @@ import 'package:list_market/models/item.model.dart';
 import 'package:list_market/repositories/itens.repository.dart';
 import 'package:list_market/views/app.dart';
 
-class Novo extends StatelessWidget {
-  final _formKey = GlobalKey<FormState>();
+class Editar extends StatelessWidget {
+  final _formKey2 = GlobalKey<FormState>();
   final _item = Item();
   final _repository = ItensRepository();
+  var _itemAntigo = Item();
 
-  salvar(BuildContext context) {
-    if (_formKey.currentState.validate()) {
-      _formKey.currentState.save();
-      _repository.create(_item);
+  Edita(BuildContext context) {
+    if (_formKey2.currentState.validate()) {
+      _formKey2.currentState.save();
+      _repository.edita(_itemAntigo, _item);
       Navigator.of(context).pop(true);
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    _itemAntigo = ModalRoute.of(context).settings.arguments;
+
     return Scaffold(
         appBar: AppBar(
-          title: Text('Novo Item'),
+          title: Text('Editar Produto'),
           centerTitle: true,
         ),
         body: Column(children: [
           Container(
             margin: const EdgeInsets.all(16),
             child: Form(
-                key: _formKey,
+                key: _formKey2,
                 child: Column(
                   children: [
                     TextFormField(
+                      textAlign: TextAlign.center,
                       autofocus: true,
                       inputFormatters: <TextInputFormatter>[
                         FilteringTextInputFormatter.digitsOnly
                       ],
-                      textAlign: TextAlign.center,
+                      initialValue: _itemAntigo.qtd.toString(),
                       decoration: InputDecoration(
                           labelText: 'Quantidade',
                           border: OutlineInputBorder()),
@@ -47,6 +51,7 @@ class Novo extends StatelessWidget {
                     Padding(padding: EdgeInsets.only(bottom: 16)),
                     TextFormField(
                       textAlign: TextAlign.center,
+                      initialValue: _itemAntigo.texto,
                       decoration: InputDecoration(
                           labelText: 'Produto', border: OutlineInputBorder()),
                       onSaved: (value) => _item.texto = value,
@@ -57,14 +62,14 @@ class Novo extends StatelessWidget {
                 )),
           ),
           ElevatedButton.icon(
-            onPressed: () => salvar(context),
-            icon: Icon(Icons.add),
+            onPressed: () => Edita(context),
+            icon: Icon(Icons.edit),
             label: Text(
-              'Adicionar',
+              'Editar',
               style: TextStyle(fontSize: 20),
             ),
             style: ButtonStyle(
-                backgroundColor: MaterialStateProperty.all(Colors.green),
+                backgroundColor: MaterialStateProperty.all(Colors.yellow[700]),
                 padding: MaterialStateProperty.all(EdgeInsets.all(16))),
           )
         ]));

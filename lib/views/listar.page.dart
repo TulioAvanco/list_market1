@@ -51,6 +51,10 @@ class _ListarState extends State<Listar> {
         });
   }
 
+  Future<bool> carrinho(BuildContext context) async {
+    return true;
+  }
+
   bool canEdit = false;
 
   @override
@@ -59,6 +63,22 @@ class _ListarState extends State<Listar> {
       appBar: AppBar(
         title: Text('Lista Mercado'),
         centerTitle: true,
+        actions: [
+          Row(
+            children: [
+              IconButton(
+                  onPressed: () => setState(() => canEdit = !canEdit),
+                  icon: Icon(Icons.edit)),
+              IconButton(
+                  onPressed: () async {
+                    var retorno = await Navigator.of(context).pushNamed(
+                      '/carrinho',
+                    );
+                  },
+                  icon: Icon(Icons.shopping_basket))
+            ],
+          )
+        ],
       ),
       body: ListView.builder(
         itemCount: itens.length,
@@ -67,36 +87,67 @@ class _ListarState extends State<Listar> {
           return Dismissible(
             key: Key(item.texto),
             background: Container(
-              child: Center(
-                child: Text(
-                  'Excluir',
-                  style: TextStyle(color: Colors.white, fontSize: 16),
-                ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  Padding(padding: EdgeInsets.only(right: 16)),
+                  Icon(
+                    Icons.delete,
+                    color: Colors.white,
+                  ),
+                  Padding(padding: EdgeInsets.only(right: 16)),
+                  Text(
+                    'Excluir',
+                    style: TextStyle(color: Colors.white, fontSize: 16),
+                  ),
+                  Padding(padding: EdgeInsets.only(right: 16)),
+                  Icon(
+                    Icons.delete,
+                    color: Colors.white,
+                  )
+                ],
               ),
               color: Colors.red,
             ),
             secondaryBackground: Container(
-              child: Center(
-                child: Text(
-                  'Carrinho',
-                  style: TextStyle(color: Colors.white, fontSize: 16),
-                ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  Icon(
+                    Icons.delete,
+                    color: Colors.white,
+                  ),
+                  Padding(padding: EdgeInsets.only(right: 16)),
+                  Text(
+                    'Excluir',
+                    style: TextStyle(color: Colors.white, fontSize: 16),
+                  ),
+                  Padding(padding: EdgeInsets.only(right: 16)),
+                  Icon(
+                    Icons.delete,
+                    color: Colors.white,
+                  ),
+                  Padding(padding: EdgeInsets.only(right: 16)),
+                ],
               ),
-              color: Colors.green,
+              color: Colors.red,
             ),
             onDismissed: (direction) {
               if (direction == DismissDirection.endToStart) {
                 ItensRepository().delete(item.texto);
                 setState(() => this.itens.remove(item));
               } else if (direction == DismissDirection.startToEnd) {
-                //carrinho de compra
-
+                // ignore: unnecessary_statements
+                ItensRepository().delete(item.texto);
+                setState(() => this.itens.remove(item));
               }
             },
             // Invoca a tela de atualizar
             // ignore: missing_return
             confirmDismiss: (direction) {
               if (direction == DismissDirection.endToStart) {
+                return excluir(context);
+              } else if (direction == DismissDirection.startToEnd) {
                 return excluir(context);
               }
             },
@@ -107,9 +158,26 @@ class _ListarState extends State<Listar> {
                   canEdit
                       ? IconButton(
                           icon: Icon(Icons.edit),
-                          color: Colors.yellow,
-                          onPressed: () {})
-                      : Padding(padding: EdgeInsets.only(top: 70)),
+                          color: Colors.yellow[700],
+                          onPressed: () async {
+                            var retorno = await Navigator.of(context)
+                                .pushNamed('/editar', arguments: item);
+                            if (retorno != null) {
+                              setState(
+                                  () => this.itens = ItensRepository().read());
+                            }
+                          })
+                      : Padding(padding: EdgeInsets.only(left: 16)),
+                  IconButton(
+                      icon: Icon(Icons.shopping_basket),
+                      color: Colors.green,
+                      onPressed: () async {
+                        var retorno = await Navigator.of(context)
+                            .pushNamed('/addCarrinho', arguments: item);
+                        if (retorno != null) {
+                          setState(() => this.itens = ItensRepository().read());
+                        }
+                      }),
                   Padding(padding: EdgeInsets.only(left: 16)),
                   CircleAvatar(
                     child: Text(item.qtd.toString()),
@@ -130,7 +198,7 @@ class _ListarState extends State<Listar> {
         },
       ),
       floatingActionButton: FloatingActionButton(
-        child: Icon(Icons.add_shopping_cart),
+        child: Icon(Icons.post_add),
         onPressed: () => addItem(context),
       ),
     );
