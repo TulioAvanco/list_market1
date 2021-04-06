@@ -65,9 +65,6 @@ class _AddCarrinhoState extends State<AddCarrinho> {
                     TextFormField(
                       textAlign: TextAlign.center,
                       autofocus: true,
-                      inputFormatters: <TextInputFormatter>[
-                        FilteringTextInputFormatter.digitsOnly
-                      ],
                       decoration: InputDecoration(
                           labelText: 'Valor', border: OutlineInputBorder()),
                       onSaved: (value) => _item.valor = double.parse(value),

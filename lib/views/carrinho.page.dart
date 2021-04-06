@@ -62,84 +62,96 @@ class _CarrinhoState extends State<Carrinho> {
         ],
         centerTitle: true,
       ),
-      body: ListView.builder(
-        itemCount: itens.length,
-        itemBuilder: (_, contador) {
-          var item = itens[contador];
-          return Dismissible(
-            key: Key(item.texto),
-            background: Container(
+      body: itens.isEmpty
+          ? Container(
+              alignment: Alignment.center,
               child: Row(
-                mainAxisAlignment: MainAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Padding(padding: EdgeInsets.only(right: 16)),
-                  Icon(
-                    Icons.delete,
-                    color: Colors.white,
-                  ),
-                  Padding(padding: EdgeInsets.only(right: 16)),
                   Text(
-                    'Excluir',
-                    style: TextStyle(color: Colors.white, fontSize: 16),
+                    'Seu Carrinho está Vazio!',
+                    style: TextStyle(fontSize: 20),
                   ),
-                  Padding(padding: EdgeInsets.only(right: 16)),
-                  Icon(
-                    Icons.delete,
-                    color: Colors.white,
-                  )
                 ],
-              ),
-              color: Colors.red,
-            ),
-            secondaryBackground: Container(
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  Icon(
-                    Icons.delete,
-                    color: Colors.white,
+              ))
+          : ListView.builder(
+              itemCount: itens.length,
+              itemBuilder: (_, contador) {
+                var item = itens[contador];
+                return Dismissible(
+                  key: Key(item.texto),
+                  background: Container(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        Padding(padding: EdgeInsets.only(right: 16)),
+                        Icon(
+                          Icons.delete,
+                          color: Colors.white,
+                        ),
+                        Padding(padding: EdgeInsets.only(right: 16)),
+                        Text(
+                          'Excluir',
+                          style: TextStyle(color: Colors.white, fontSize: 16),
+                        ),
+                        Padding(padding: EdgeInsets.only(right: 16)),
+                        Icon(
+                          Icons.delete,
+                          color: Colors.white,
+                        )
+                      ],
+                    ),
+                    color: Colors.red,
                   ),
-                  Padding(padding: EdgeInsets.only(right: 16)),
-                  Text(
-                    'Excluir',
-                    style: TextStyle(color: Colors.white, fontSize: 16),
+                  secondaryBackground: Container(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        Icon(
+                          Icons.delete,
+                          color: Colors.white,
+                        ),
+                        Padding(padding: EdgeInsets.only(right: 16)),
+                        Text(
+                          'Excluir',
+                          style: TextStyle(color: Colors.white, fontSize: 16),
+                        ),
+                        Padding(padding: EdgeInsets.only(right: 16)),
+                        Icon(
+                          Icons.delete,
+                          color: Colors.white,
+                        ),
+                        Padding(padding: EdgeInsets.only(right: 16)),
+                      ],
+                    ),
+                    color: Colors.red,
                   ),
-                  Padding(padding: EdgeInsets.only(right: 16)),
-                  Icon(
-                    Icons.delete,
-                    color: Colors.white,
+                  onDismissed: (direction) {
+                    ItensRepository().deleteCarrinho(item.texto);
+                    setState(() => this.itens.remove(item));
+                    Total = ItensRepository().total();
+                  },
+                  confirmDismiss: (direction) => excluir(context),
+                  child: Row(
+                    children: [
+                      Padding(padding: EdgeInsets.only(left: 16)),
+                      Padding(padding: EdgeInsets.only(top: 50)),
+                      CircleAvatar(
+                        backgroundColor: Colors.blue,
+                        child: Text(item.qtd.toString()),
+                      ),
+                      Padding(padding: EdgeInsets.only(right: 16)),
+                      Text(
+                        item.texto,
+                      ),
+                      Padding(padding: EdgeInsets.only(right: 16)),
+                      Text('R\$'),
+                      Text(item.valor.toStringAsFixed(2)),
+                    ],
                   ),
-                  Padding(padding: EdgeInsets.only(right: 16)),
-                ],
-              ),
-              color: Colors.red,
+                );
+              },
             ),
-            onDismissed: (direction) {
-              ItensRepository().deleteCarrinho(item.texto);
-              setState(() => this.itens.remove(item));
-              Total = ItensRepository().total();
-            },
-            confirmDismiss: (direction) => excluir(context),
-            child: Row(
-              children: [
-                Padding(padding: EdgeInsets.only(left: 16)),
-                Padding(padding: EdgeInsets.only(top: 50)),
-                CircleAvatar(
-                  backgroundColor: Colors.green,
-                  child: Text(item.qtd.toString()),
-                ),
-                Padding(padding: EdgeInsets.only(right: 16)),
-                Text(
-                  item.texto,
-                ),
-                Padding(padding: EdgeInsets.only(right: 16)),
-                Text('R\$'),
-                Text(item.valor.toStringAsFixed(2)),
-              ],
-            ),
-          );
-        },
-      ),
     );
   }
 }

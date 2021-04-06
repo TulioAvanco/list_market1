@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:list_market/models/item.model.dart';
 
 class ItensRepository {
@@ -16,7 +18,27 @@ class ItensRepository {
   }
 
   List<Item> read() {
-    return itens;
+    List<Item> encontraods = [];
+    List<Item> Nencontrados = [];
+    List<Item> resp = [];
+
+    for (Item x in itens) {
+      if (x.ntem == true) {
+        Nencontrados.add(x);
+      } else {
+        encontraods.add(x);
+      }
+    }
+
+    for (Item x in encontraods) {
+      resp.add(x);
+    }
+
+    for (Item x in Nencontrados) {
+      resp.add(x);
+    }
+
+    return resp;
   }
 
   void delete(String textorecebido) {
